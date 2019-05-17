@@ -15,7 +15,7 @@ if (get_option('POSTS_LIKE') == NULL)
 {
    foreach($posts as $p)
    {
-      array_unshift($POSTS_LIKE[$p->ID], intval(0));
+      $POSTS_LIKE[$p->ID] = array();
    }
 
    add_option('POSTS_LIKE', $POSTS_LIKE);
@@ -30,11 +30,21 @@ add_filter('the_content', 'wp_like_add_like_function');
 function wp_like_add_like_function($content)
 {
    $id = get_the_ID();
-   $like = NULL;
+   $like = 0;
 
-   if($POSTS_LIKE[$id] == NULL)
+   if($GLOBALS['POSTS_LIKE'][$id])
    {
-      $like = '0';
+      foreach($GLOBALS['POSTS_LIKE'][$id] as $l)
+      {
+         if($l)
+         {
+            $like += 1;
+         }
+      }
+   }
+   else
+   {
+      $like = 0;
    }
 
    return '<p><button class="wp-like-button">LIKE (' . $like . ')</button></p><br />' . $content;
